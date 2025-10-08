@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kinematics & Projectile Quiz — Instant Scoring</title>
+  <style>
+    :root{--bg:#f6fbff;--card:#ffffff;--accent:#0b66ff;--muted:#6b7280}
+    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); margin:0; padding:24px; color:#0f172a}
+    .container{max-width:920px;margin:0 auto}
+    header{display:flex;align-items:center;gap:16px}
+    h1{font-size:20px;margin:0}
+    p.lead{margin:6px 0 18px;color:var(--muted)}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 20px rgba(11,102,255,0.06);margin-bottom:16px}
+    .question{padding:12px;border-radius:8px;border:1px solid #eef2ff;background:linear-gradient(180deg, rgba(11,102,255,0.02), transparent);margin-bottom:10px}
+    .qtext{font-weight:600}
+    .options{margin-top:8px;display:flex;flex-direction:column;gap:8px}
+    label.option{display:flex;align-items:center;gap:12px;padding:8px;border-radius:8px;cursor:pointer}
+    label.option input{accent-color:var(--accent)}
+    .actions{display:flex;gap:8px;align-items:center;margin-top:12px}
+    button{background:var(--accent);color:white;padding:10px 14px;border-radius:8px;border:0;cursor:pointer}
+    button.secondary{background:#e6eefc;color:var(--accent);border:1px solid rgba(11,102,255,0.12)}
+    .result{margin-top:12px;padding:12px;border-radius:8px;background:#f8fafc;border:1px solid #e6eefc}
+    .correct{color:green;font-weight:700}
+    .wrong{color:#d5392a;font-weight:700}
+    .answerline{margin-top:8px;padding:8px;border-radius:8px;background:#fcfcfc;border:1px dashed #eef2ff}
+    .meta{font-size:13px;color:var(--muted)}
+    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+    @media (max-width:640px){body{padding:12px}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#2aa0ff);display:flex;align-items:center;justify-content:center;color:white;font-weight:700">QZ</div>
+      <div>
+        <h1>Kinematics & Projectile Quiz (30 MCQs)</h1>
+        <p class="lead">One mark for each correct answer. No negative marking. Choose the best option for each question and click <strong>Submit</strong>. Your score and correct answers will appear instantly.</p>
+      </div>
+    </header>
+
+    <form id="quizForm" class="card" onsubmit="return false;">
+      <div id="questions"></div>
+
+      <div class="actions">
+        <button id="submitBtn" type="button">Submit</button>
+        <button id="resetBtn" class="secondary" type="button">Reset</button>
+        <div style="margin-left:auto" class="meta">Time: <span id="timer">00:00</span></div>
+      </div>
+
+      <div id="resultArea" style="display:none" class="result">
+        <div><strong>Score:</strong> <span id="scoreText"></span> / 30</div>
+        <div id="feedback" style="margin-top:8px" class="meta"></div>
+        <div id="answersList" style="margin-top:10px"></div>
+      </div>
+    </form>
+
+    <footer class="meta">Open this file in any modern browser. You can host it on your LMS or share the .html file with students.</footer>
+  </div>
+
+  <script>
+    const questions = [
+      {q:"01. A ball thrown horizontally with a speed of 5 m/s from the top of a tower lands 20 meters from the base of the tower. What is the height of the tower?", choices:["78.4 m","78.0 m","68.4 m","80.4 m"], correct:0},
+      {q:"02. A particle moves in a straight line with an initial velocity of 10 m/s and a uniform acceleration of –3 m/s². What will be the velocity of the particle after covering 16 meters?", choices:["196","14","4","2"], correct:2},
+      {q:"03. A car starts with an initial velocity of 25 m/s and moves with a uniform acceleration of 2 m/s². It crosses a pillar located 100 m away. What was the car's velocity at the moment it crossed the pillar?", choices:["225 m/s","15 m/s","1025 m/s","5√41 m/s"], correct:3},
+      {q:"04. If a body is projected vertically upwards from the ground with an initial velocity u, what is the maximum height it will reach?", choices:["u²/g","u²/2g","u²/4g","u²/8g"], correct:1},
+      {q:"05. It takes 3 seconds for a stone to fall from the mouth of a well to its bottom. What is the height of the well from the bottom to the mouth?", choices:["52.2 m","49.6 m","45.4 m","44.1 m"], correct:0},
+      {q:"06. According to the diagram, what is the value of the projection velocity u?", choices:["20 m/s","22 m/s","25.4 m/s","29.4 m/s"], correct:2},
+      {q:"07. What initial velocity must a projectile have to achieve a maximum horizontal range of 50 ft?", choices:["22.12 ft/s","40 ft/s","245 ft/s","800 ft/s"], correct:0},
+      {q:"08. A river 1.5 km wide is flowing at 5 km/h. A swimmer wants to cross the river in minimum time by swimming at 6 km/h. What is the minimum time required for the swimmer to cross the river?", choices:["10 minutes","12 minutes","15 minutes","18 minutes"], correct:1},
+      {q:"09. Two buses A and B are moving at right angles to each other on two straight roads with velocities of 40 km/h and 30 km/h respectively. What is the relative velocity of bus A with respect to bus B?", choices:["25 km/h","35 km/h","45 km/h","50 km/h"], correct:2},
+      {q:"10. A cricket ball is hit by a bat with a velocity of 40 m/s at an angle of 60° with the ground. What is the velocity of the ball at maximum height?", choices:["0","20 m/s","30 m/s","40 m/s"], correct:1},
+      {q:"11. A particle starts from rest with an acceleration of 2 m/s² and covers 1m distance in the 1st second. What is the distance covered by the particle in the next 1 second?", choices:["1","2","3","4"], correct:1},
+      {q:"12. A body is dropped from a high place. If the body does not reach the ground in 5 seconds, what is the distance covered by the body until that time?", choices:["50 m","80 m","100.5 m","122.5 m"], correct:3},
+      {q:"13. How much time will it take for a stone dropped from a 100-meter high hill to reach the ground?", choices:["3.19","3.91","4.25","4.52"], correct:2},
+      {q:"14. A launch can travel at 10 km/h. A river flows at 5 km/h. In which direction should the launch start from a point on one bank of the river to reach a point directly opposite on the other bank?", choices:["90° with current","45° with current","120° with current","None of these"], correct:0},
+      {q:"15. In the given graph, what is the acceleration in the AB segment of the graph?", choices:["2/3 m/s²","1 m/s²","1.5 m/s²","3/2 m/s²"], correct:2},
+      {q:"16. The velocity-time graph of a body is shown: What is the acceleration of the body in the first 5 seconds?", choices:["1.5 m/s²","2 m/s²","2.4 m/s²","None of these"], correct:2},
+      {q:"17. What is the total distance covered by the body in 10 seconds?", choices:["50 m","60 m","70 m","75 m"], correct:1},
+      {q:"18. If the range R and maximum height H of a body projected at the same velocity and 45° angle, what is the relationship between them?", choices:["2R = H","R = H","R = 2H","R = 4H"], correct:2},
+      {q:"19. If H is the maximum height and R is the horizontal range, then for a body projected at an angle of 30° with the ground, which of the following is correct?", choices:["R = √3H","R = 4H","R = 4/√3H","R = 3√2H"], correct:2},
+      {q:"20. Two cars start from the same place at 1 km/h and 2 km/h. If the angle between their paths is 60°, what will be their distance after three hours?", choices:["5 km","6 km","3√3 km","10 km"], correct:2},
+      {q:"21. Three velocities acting on a particle simultaneously are 7 m/s, 8 m/s, and 13 m/s. If the particle remains stationary, what is the angle between the two smaller velocities?", choices:["120°","60°","90°","0°"], correct:0},
+      {q:"22. A stone falls from a balloon going upwards at 10 m/s. If it hits the ground after 10 seconds, what was the height of the balloon at that time?", choices:["490 m","390 m","290 m","590 m"], correct:0},
+      {q:"23. A bomb is dropped from an airplane moving vertically upwards with uniform velocity. If it hits the ground after 5 seconds, what was the height of the airplane when the bomb hit the ground?", choices:["122.5 m","98 m","49 m","100 m"], correct:0},
+      {q:"24. A body projected vertically upwards is at height h at times t and 2t. What is h?", choices:["0.5 gt²","gt²","2gt²","4gt²"], correct:0},
+      {q:"25. If a bullet is fired from a gun with a velocity of 192 ft/sec, how high will it go?", choices:["576 ft","288 ft","156 ft","160 ft"], correct:0},
+      {q:"26. If the magnitude of the resultant of two velocities u and v is u, and its direction is perpendicular to the first velocity, then which of the following is true?", choices:["u = v/√2","u = v","u = √2v","v = u√2"], correct:0},
+      {q:"27. A 2kg coconut falls downwards from a tree. If the air resistance is 7.6N, what is the acceleration of the coconut?", choices:["1 m/s²","2 m/s²","4 m/s²","6 m/s²"], correct:1},
+      {q:"28. A swimmer starts to cross a 2.45 km wide river directly across, with the water current flowing at 3/4 times their swimming speed. How far downstream from the starting point on the opposite bank will they land?", choices:["0.32 km","1.05 km","1.50 km","5.72 km"], correct:1},
+      {q:"29. The adjacent figure shows a body moving with uniform velocity. Which of the following is applicable to its motion? What is the velocity of the body?", choices:["2 m/s","4 m/s","8 m/s","16 m/s"], correct:1},
+      {q:"30. A stone is thrown horizontally from the top of a high tower with a velocity of 64 m/s. The stone hits the ground 320 meters away from the base of the tower. After how many seconds will the stone hit the ground?", choices:["2","3","4","5"], correct:2}
+    ];
+
+    const questionsDiv = document.getElementById('questions');
+    questions.forEach((q, index) => {
+      const qDiv = document.createElement('div');
+      qDiv.className = 'question';
+      qDiv.innerHTML = `<div class='qtext'>${q.q}</div>`;
+      const optionsDiv = document.createElement('div');
+      optionsDiv.className = 'options';
+      q.choices.forEach((choice, i) => {
+        const label = document.createElement('label');
+        label.className = 'option';
+        label.innerHTML = `<input type='radio' name='q${index}' value='${i}'> ${choice}`;
+        optionsDiv.appendChild(label);
+      });
+      qDiv.appendChild(optionsDiv);
+      questionsDiv.appendChild(qDiv);
+    });
+
+    const submitBtn = document.getElementById('submitBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const resultArea = document.getElementById('resultArea');
+    const scoreText = document.getElementById('scoreText');
+    const answersList = document.getElementById('answersList');
+
+    submitBtn.addEventListener('click', () => {
+      let score = 0;
+      answersList.innerHTML = '';
+      questions.forEach((q, index) => {
+        const selected = document.querySelector(`input[name='q${index}']:checked`);
+        const correctAnswer = q.choices[q.correct];
+        const li = document.createElement('div');
+        if(selected && parseInt(selected.value) === q.correct){
+          score++;
+          li.innerHTML = `<span class='correct'>Q${index+1}: Correct ✅</span> Answer: ${correctAnswer}`;
+        } else {
+          li.innerHTML = `<span class='wrong'>Q${index+1}: Wrong ❌</span> Answer: ${correctAnswer}`;
+        }
+        li.className = 'answerline';
+        answersList.appendChild(li);
+      });
+      scoreText.textContent = score;
+      resultArea.style.display = 'block';
+    });
+
+    resetBtn.addEventListener('click', () => {
+      document.getElementById('quizForm').reset();
+      resultArea.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
